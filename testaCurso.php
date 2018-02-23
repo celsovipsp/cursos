@@ -7,11 +7,12 @@
  */
 include 'vendor/autoload.php';
 
-$c = new App\Model\Curso();
-$c->setNome("Programação com PHP");
-$c->setValor(300.50);
+$c1 = new App\Model\Curso();
+$c1->setNome("");
 
-$cDAO = new App\DAO\CursoDAO();
-$cDAO->inserir($c);
 
-echo $c->getNome() . " - " . $c->getValor();
+$c1DAO = new App\DAO\CursoDAO();
+foreach ($c1DAO->pesquisar($c1) as $item){
+    echo $item->getId(). $item->getNome().$item->getValor()."<br>";
+}
+

@@ -19,11 +19,11 @@ class CursoDAO
 
     public function __construct()
     {
-        $this->conexao = new \PDO("mysql : dbname=db_cursos;host=localhost", "root", "Suporte99");
+        $this->conexao = new \PDO("mysql:dbname=db_cursos;host=localhost", "root", "Suporte99");
         $this->conexao->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
 
     }
-    public function inserir($cursos)
+    public function inserir($curso)
     {
         $sql = "insert into cursos (nome, valor) VALUES  (:nome,:valor)";
         try{
@@ -31,8 +31,38 @@ class CursoDAO
             $insercao->bindValue(':nome', $curso->getNome());
             $insercao->bindValue(':valor', $curso->getValor());
             $insercao->execute();
+            return true;
 
-        }cath (\PDOException $erro){ echo $erro->getMessage();
+        } catch (\PDOException $erro){
+            echo $erro->getMessage();
+            return false;
+        }
+
+    }
+
+    /**
+     * @return \PDO
+     */
+    public function pesquisar($curso)
+    {
+        $sql = "select * from cursos where nome like :nome";
+        try{
+            $pesquisa = $this->conexao->prepare($sql);
+            $pesquisa->bindValue(":nome", "%" .$curso->getNome()."%");
+            $pesquisa->execute();
+            $resultado = $pesquisa->fetchAll();
+            $cursos = [];
+            foreach ($resultado as $item){
+                $curso = new \App\Model\Curso();
+                $curso->setId($item['id']);
+                $curso->setNome($item['nome']);
+                $curso->setValor($item['valor']);
+                $cursos[] = $curso;
+            }
+            return $cursos;
+
+        } catch (\PDOException $erro){
+            echo $erro->getMessage();
         }
     }
 }
